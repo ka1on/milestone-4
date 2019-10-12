@@ -1,0 +1,47 @@
+---
+title: "Milestone-4"
+author: "Katie Cao"
+date: "10/12/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(RCurl)
+library(okcupiddata)
+
+```
+
+```{r plot, echo = FALSE}
+
+# Imported OKCupid data from public package from 2016
+
+data(profiles)
+
+# Filter for profiles that have an age and sex observation
+
+profiles <- profiles %>%
+  filter(!is.na(age)) %>%
+  filter(!is.na(sex))
+
+# Create a dataframe with mean to be used as comparison in plot
+
+profiles1 <- profiles %>% 
+  group_by(sex) %>%
+  summarise(mean = mean(age))
+
+# Look at a density distribution with counts of users across age, comparing between male and female
+
+ggplot(profiles, aes(x = age, color = sex)) +
+  geom_density(aes(y = ..count.., fill = sex), alpha = 0.3) +
+  geom_vline(aes(xintercept = mean, color = sex), data = profiles1,
+             linetype = "dashed", size = 0.6) +
+  labs(title = "Age Distribution of Californian OKCupid Users", subtitle = "Average woman is older than average man") +
+  scale_fill_discrete(labels = c("Female", "Male")) +
+  guides(linetype=FALSE, color = FALSE)
+
+```
+
